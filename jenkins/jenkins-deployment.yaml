@@ -1,0 +1,49 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+  labels:
+    app: jenkins
+  name: jenkins
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      containers:
+      - image: 172.16.16.250/library/jenkins:latest
+        imagePullPolicy: Always
+        name: jenkins
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 50000
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+          requests:
+            cpu: "2"
+            memory: 2Gi
+        volumeMounts:
+        - mountPath: /var/jenkins_home
+          name: sunyard-jenkins
+        - mountPath: /root
+          name: sunyard-jksroot
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      volumes:
+      - name: sunyard-jenkins
+        persistentVolumeClaim:
+          claimName: jenkinshome
+      - name: sunyard-jksroot
+        persistentVolumeClaim:
+          claimName: jenkinsroot
+

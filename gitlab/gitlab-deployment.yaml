@@ -1,0 +1,68 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+  name: gitlab
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab
+  template:
+    metadata:
+      labels:
+        app: gitlab
+    spec:
+      containers:
+      - env:
+        - name: hostname
+          value: 172.1.2.44
+        image: 172.16.16.250/library/gitlab-ce-zh:latest
+        imagePullPolicy: IfNotPresent
+        name: gitlab
+        ports:
+        - containerPort: 30184
+          protocol: TCP
+        - containerPort: 22
+          protocol: TCP
+        - containerPort: 443
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+          requests:
+            cpu: 2000m
+            memory: 4Gi
+        volumeMounts:
+        - mountPath: /etc/gitlab/gitlab.rb
+          name: gitlabrb
+          subPath: gitlab.rb
+        - mountPath: /etc/gitlab
+          name: sunyard-gitlabconfig
+        - mountPath: /var/opt/gitlab
+          name: sunyard-gitlabdata
+        - mountPath: /var/log/gitlab
+          name: sunyard-gitlablog
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      serviceAccountName: gitlab
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: gitlabv1.2
+            path: gitlab.rb
+          name: gitlabrb
+          optional: false
+        name: gitlabrb
+      - name: sunyard-gitlabconfig
+        persistentVolumeClaim:
+          claimName: gitlabconfig1
+      - name: sunyard-gitlabdata
+        persistentVolumeClaim:
+          claimName: gitlabdata1
+      - name: sunyard-gitlablog
+        persistentVolumeClaim:
+          claimName: gitlablog1

@@ -1,0 +1,19 @@
+apiVersion: v1
+data:
+  jirapropertiesv1.1: |-
+    application.name                        sunyard-jira
+    application.password                    jira
+    application.login.url                   http://172.16.16.211:30148/crowd/console/
+    crowd.server.url                        http://172.16.16.211:30148/crowd/services/
+    crowd.base.url                          http://172.16.16.211:30148/crowd/
+    session.isauthenticated                 session.isauthenticated
+    session.tokenkey                        session.tokenkey
+    session.validationinterval              2
+    session.lastvalidation                  session.lastvalidation
+kind: ConfigMap
+metadata:
+  labels:
+    app: jira
+  name: jiracrowdproperties
+  namespace: kube-system
+

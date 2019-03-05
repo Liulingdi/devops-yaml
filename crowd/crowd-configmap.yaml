@@ -1,0 +1,22 @@
+apiVersion: v1
+data:
+  openidserverv1.1: |-
+    application.name                        crowd-openid-server
+    application.password                    openid
+    application.base.url                    http://172.1.2.44:30148/openidserver
+    application.login.url                   http://172.1.2.44:30148/openidserver
+    application.login.url.template          http://172.1.2.44:30148/openidserver?returnToUrl=${RETURN_TO_URL}
+
+    crowd.server.url                        http://172.1.2.44:30148/crowd/services/
+
+    session.isauthenticated                 session.isauthenticated
+    session.tokenkey                        session.tokenkey
+    session.validationinterval              0
+    session.lastvalidation                  session.lastvalidation
+kind: ConfigMap
+metadata:
+  labels:
+    app: crowd
+  name: crowdproperties
+  namespace: kube-system
+

@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+  labels:
+  name: gerrit
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gerrit
+  template:
+    metadata:
+      labels:
+        app: gerrit
+    spec:
+      containers:
+      - env:
+        - name: AUTH_TYPE
+          value: OPENID_SSO
+        - name: GERRIT_INIT_ARGS
+          value: --install-all-plugins
+        image: 172.16.16.250/library/gerrit:latest
+        imagePullPolicy: Always
+        name: gerrit
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 29418
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: 2Gi
+          requests:
+            cpu: "1"
+            memory: 2Gi
+        volumeMounts:
+        - mountPath: /var/gerrit/review_site
+          name: sunyard-gerritpv
+        - mountPath: /var/gerrit/.ssh
+          name: sunyard-gerritssh
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      volumes:
+      - name: sunyard-gerritpv
+        persistentVolumeClaim:
+          claimName: gerritpv
+      - name: sunyard-gerritssh
+        persistentVolumeClaim:
+          claimName: gerritssh

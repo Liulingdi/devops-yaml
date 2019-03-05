@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+  name: redis
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - env:
+        image: 172.16.16.250/k8s-deploy/redis:3.2
+        imagePullPolicy: IfNotPresent
+        name: redis
+        ports:
+        - containerPort: 6379
+          protocol: TCP
+        - containerPort: 22
+        resources:
+          limits:
+            cpu: 200m
+            memory: 512M
+          requests:
+            cpu: 200m
+            memory: 512M
+        volumeMounts:
+        - mountPath: /var/lib/redis
+          name: redis-data
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      volumes:
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: redisdata

@@ -1,0 +1,49 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: confluence
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: confluence
+  template:
+    metadata:
+      labels:
+        app: confluence
+    spec:
+      containers:
+      - image: 172.16.16.250/sunyardimg/confluence:20170829
+        imagePullPolicy: IfNotPresent
+        name: confluence
+        ports:
+        - containerPort: 8090
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "2"
+            memory: 4Gi
+          requests:
+            cpu: "2"
+            memory: 4Gi
+        volumeMounts:
+        - mountPath: /usr/local/atlassian/confluence/confluence/WEB-INF/classes/crowd.properties
+          name: confluencev1-1
+          subPath: crowd.properties
+        - mountPath: /var/local/atlassian/confluence
+          name: confpv
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: confluencev1.1
+            path: crowd.properties
+          name: confluencrowdproperties
+        name: confluencev1-1
+      - name: confpv
+        persistentVolumeClaim:
+          claimName: confpv
+
